@@ -40,3 +40,32 @@ router.post('/notes', (req, res) => {
 });
 
 // Delete a note
+router.delete('/notes/:id', (req, res) => {
+    const noteId = parseInt(req.params.id, 10);
+    console.log('Delete request received for note ID:', noteId); // Log the ID received
+
+
+    fs.readFile(notesFilePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading notes file:', err.message);
+            return res.status(500).json({ error: 'Failed to read notes' });
+        }
+
+        let notes = JSON.parse(data);
+        console.log('Current notes:', notes); // Log the current notes
+
+        notes = notes.filter(note => note.id !== noteId);
+        console.log('Notes after filtering:', notes); // Log notes after filtering
+
+
+        fs.writeFile(notesFilePath, JSON.stringify(notes), (err) => {
+            if (err) {
+                console.error('Error writing notes file:', err.message);
+                return res.status(500).json({ error: 'Failed to delete note' });
+            }
+            console.log('Note deleted successfully')
+            res.status(204).end();
+        });
+    });
+});
+
