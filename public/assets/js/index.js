@@ -45,13 +45,25 @@ const saveNote = (note) =>
     body: JSON.stringify(note)
   });
 
-const deleteNote = (id) =>
-  fetch(`/api/notes/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
+  const deleteNote = (id) => {
+    console.log('Deleting note with ID:', id);
+    return fetch(`/api/notes/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Failed to delete note: ${response.statusText}`);
+        }
+        return response;
+    })
+    .catch(error => {
+        console.error('Error deleting note:', error);
+    });
+  };
+  
 
 const renderActiveNote = () => {
   hide(saveNoteBtn);
@@ -98,7 +110,10 @@ const handleNoteDelete = (e) => {
   deleteNote(noteId).then(() => {
     getAndRenderNotes();
     renderActiveNote();
-  });
+  })
+  .catch(error => {
+    console.error('Error deleting note:', error);
+});
 };
 
 // Sets the activeNote and displays it
@@ -129,7 +144,9 @@ const handleRenderBtns = () => {
 
 // Render the list of note titles
 const renderNoteList = async (notes) => {
+  
   let jsonNotes = await notes.json();
+
   if (window.location.pathname === '/notes') {
     noteList.forEach((el) => (el.innerHTML = ''));
   }
