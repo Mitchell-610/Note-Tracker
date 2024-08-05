@@ -4,7 +4,9 @@
   "description": "An amazing application that will allow the user to store notes for themselves.",
   "main": "index.js",
   "scripts": {
+    "start": "node server.js",
     "test": "jest"
+    
   },
   "keywords": [],
   "author": "",
