@@ -45,24 +45,13 @@ const saveNote = (note) =>
     body: JSON.stringify(note)
   });
 
-  const deleteNote = (id) => {
-    console.log('Deleting note with ID:', id);
-     return fetch(`/api/notes/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`Failed to delete note: ${response.statusText}`);
-        }
-        return response;
-    })
-    .catch(error => {
-        console.error('Error deleting note:', error);
+  const deleteNote = (id) =>
+    fetch(`/api/notes/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
-  };
   
 
 const renderActiveNote = () => {
