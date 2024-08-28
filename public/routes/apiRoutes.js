@@ -41,9 +41,14 @@ router.post('/notes', (req, res) => {
 
 // Delete a note
 router.delete('/notes/:id', (req, res) => {
+    console.log('Request parameters:', req.params); // Log request parameters
     const noteId = parseInt(req.params.id, 10);
     console.log('Delete request received for note ID:', noteId); // Log the ID received
 
+    if (isNaN(noteId)) {
+        console.error('Invalid note ID:', req.params.id);
+        return res.status(400).json({ error: 'Invalid note ID' });
+    }
 
     fs.readFile(notesFilePath, 'utf8', (err, data) => {
         if (err) {
@@ -51,19 +56,25 @@ router.delete('/notes/:id', (req, res) => {
             return res.status(500).json({ error: 'Failed to read notes' });
         }
 
-        let notes = JSON.parse(data);
+        let notes;
+        try {
+            notes = JSON.parse(data);
+        } catch (parseErr) {
+            console.error('Error parsing notes data:', parseErr.message);
+            return res.status(500).json({ error: 'Failed to parse notes data' });
+        }
+
         console.log('Current notes:', notes); // Log the current notes
 
         notes = notes.filter(note => note.id !== noteId);
         console.log('Notes after filtering:', notes); // Log notes after filtering
-
 
         fs.writeFile(notesFilePath, JSON.stringify(notes), (err) => {
             if (err) {
                 console.error('Error writing notes file:', err.message);
                 return res.status(500).json({ error: 'Failed to delete note' });
             }
-            console.log('Note deleted successfully')
+            console.log('Note deleted successfully');
             res.status(204).end();
         });
     });
